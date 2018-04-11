@@ -1,6 +1,7 @@
 #!/bin/bash
 
-# Fix relative links in nl-menu site
+# * Fix relative links in nl-menu site
+# * Fix Javascript redirects
 
 # Location on file system
 rootDir=/var/www/www.nl-menu.nl/rubbish
