@@ -30,5 +30,5 @@ while IFS= read -d $'\0' -r file ; do
 done < <(find $rootDir -type f -regex '.*\.\(html\|shtml\)' -print0)
 
 # Copy index.html from nlmenu.nl dir to root dir
-cp $rootDir/nl-menu.nl/index.html $rootDir/index.html
+cp $rootDir/nlmenu.nl/index.html $rootDir/index.html
 
