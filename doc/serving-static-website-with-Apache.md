@@ -94,6 +94,10 @@ Next copy the contents of your site into this directory. Make sure to check the 
 
 ![](./img/caja-permissions.png)
 
+You can also set the permissions from the terminal, using the following command:
+
+    sudo chmod -R 644 www.nl-menu.nl
+
 ### 2. Create a configuration file
 
 Next you need to create a configuration file for the site `/etc/apache2/sites-available`. The easiest way to do this is to copy an existing file (typically the default *000-default.conf*), and save it under a new name (e.g. *nl-menu.conf*). Note that you need sudo priviliges for this. Then open the newly created file in a text editor (again as sudo), and edit the value of the *DocumentRoot* variable, which must point to the root directory of your site. For example, if our site is located at `/var/www/www.nl-menu.nl` use this:
@@ -102,7 +106,7 @@ Next you need to create a configuration file for the site `/etc/apache2/sites-av
 
 Then save the file.
 
-### 3. Activate the configuration file 
+### 3. Activate the configuration file
 
 First disable the current configuration (in this case 8000-default.conf*):
 
