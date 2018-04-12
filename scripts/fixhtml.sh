@@ -29,6 +29,6 @@ done < <(find $rootDir -type f -regex '.*\.\(html\|shtml\)' -print0)
 # Copy index.html from nlmenu.nl dir to root dir
 cp $rootDir/nlmenu.nl/index.html $rootDir/index.html
 
-# Set permissions to 644 (root has read/write permissions; everyone else read-only)
-chmod -R 644 $rootDir
-
+# Set permissions on directories to 755; files to 644
+find $rootDir -type d -exec chmod 755 {} \;
+find $rootDir -type f -exec chmod 644 {} \;

@@ -94,9 +94,10 @@ Next copy the contents of your site into this directory. Make sure to check the 
 
 ![](./img/caja-permissions.png)
 
-You can also set the permissions from the terminal, using the following command:
+You can also set the permissions from the terminal, using the following commands:
 
-    sudo chmod -R 644 www.nl-menu.nl
+    sudo find www.nl-menu.nl -type d -exec chmod 755 {} \;
+    sudo find www.nl-menu.nl -type f -exec chmod 644 {} \;
 
 ### 2. Create a configuration file
 
