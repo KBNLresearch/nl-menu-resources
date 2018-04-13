@@ -8,14 +8,14 @@
 # 3. Fixes Javascript redirects
 
 # Location on file system
-rootDir=/var/www/www.nl-menu.nl/rubbish
+rootDir=/home/johan/NL-menu/nl-menu-kbresearch
 
 # Base directory on web server 
-baseDir=/rubbish
+baseDir=/nl-menu
 
 # Old and new root domain (used for updating redirects)
 rootDomainOld=http://www.nl-menu.nl
-rootDomainNew=http://127.0.0.1
+rootDomainNew=http://www.kbresearch.nl
 
 while IFS= read -d $'\0' -r file ; do
     # Rewrite relative links
