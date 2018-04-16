@@ -101,7 +101,7 @@ Although at first glance the reconstructed site appears to be of much better qua
 
 - Links to categories that contain sub categories don't work in Firefox. A workaround is to right-click on the link and open it in a new tab (or disable JavaScript). In Chrome/Chromium these links work normally.
 - The site contains a number of forms that don't work because the associated CGI scripts are missing (these scripts are not on the CD-ROM).
-- The [*Colofon*](http://www.kbresearch.nl/nl-menu/nlmenu.nl/fset/zoekenplus.html?http://www.kbresearch.nl/nl-menu/nlmenu.nl/admin/colofon.html) page shows the URL *http://www.kbresearch.nl*, instead of the original *http://www.nl-menu.nl* (this is an unintended side-effect of the aforementioned script).
+- The [*Colofon*](http://www.kbresearch.nl/nl-menu/nl-menu/nlmenu.nl/fset/zoekenplus.html?http://www.kbresearch.nl/nl-menu/nl-menu/nlmenu.nl/admin/colofon.html) page shows the URL *http://www.kbresearch.nl*, instead of the original *http://www.nl-menu.nl* (this is an unintended side-effect of the aforementioned script).
 
 There may be more issues; please feel free to contact us if you spot anything that doesn't look quite right!
 
