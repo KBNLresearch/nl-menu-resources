@@ -11,7 +11,7 @@
 rootDir=/home/johan/NL-menu/nl-menu-kbresearch
 
 # Base directory on web server 
-baseDir=/nl-menu
+baseDir=/nl-menu/nl-menu
 
 # Old and new root domain (used for updating redirects)
 rootDomainOld=http://www.nl-menu.nl
