@@ -3,7 +3,7 @@
 
 De website *NL-menu* was de eerste Nederlandse webindex. De site is in 1992 opgericht op initiatief van [SURFnet](https://en.wikipedia.org/wiki/SURFnet), de Nederlandse universiteiten en de KB. Vanaf midden jaren '90 werd de site volledig door de KB beheerd. In 2004 [stopte de KB met *NL-menu*](https://www.robcoers.nl/nl-menu-is-straks-niet-meer-leve-nl-menu/), waarna de site offline is gehaald. In 2006 is de domeinnaam *nl-menu.nl* verkocht aan een bedrijf dat de naam gebruikte voor een eigen webindex, die deels was gebaseerd op de oorspronkelijke *NL-menu* site.
 
-Het oorspronkelijke *NL-menu* is intussen in de vergetelheid geraakt. In het webarchief van het [Internet Archive](https://archive.org/) zijn nog behoorlijk wat [snapshots van *NL-menu* terug te vinden](https://web.archive.org/web/*/www.nl-menu.nl). Deze zijn echter onvolledig, en bovendien niet representatief voor hoe de site er in werkelijkheid uitzag. Zo is [deze pagina](https://web.archive.org/web/20020603232609/http://www.nl-menu.nl:80/nlmenu.nl/fset/gz.html) een snapshot uit juni 2002:
+Het oorspronkelijke *NL-menu* is intussen in de vergetelheid geraakt. In het webarchief van het [Internet Archive](https://archive.org/) zijn nog wel behoorlijk wat [snapshots van *NL-menu* terug te vinden](https://web.archive.org/web/*/www.nl-menu.nl), maar deze zijn onvolledig, en bovendien niet representatief voor hoe de site er in werkelijkheid uitzag. Zo is [deze pagina](https://web.archive.org/web/20020603232609/http://www.nl-menu.nl:80/nlmenu.nl/fset/gz.html) een snapshot uit juni 2002:
 
 ![](wayback1.png)
 
