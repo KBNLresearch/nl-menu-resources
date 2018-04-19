@@ -6,7 +6,7 @@ Meanwile, the original *NL-menu* has been largely lost to the mists of time. Eve
 
 ![](wayback1.png)
 
-However, this doesn't look even remotely like the site as it was in 2002. Just for one thing, at the top-left we see a [*Bing*](https://en.wikipedia.org/wiki/Bing_(search_engine)) search box, but *Bing* didn't even exist until 2009! An inspection of the crawl time stamps (these can be seen by clicking on the top-right *About this capture* button) reveals that this snapshot contains elements that were crawled at wildly varying dates, some as recently as 2018:
+However, this doesn't look even remotely like the site as it was in 2002. Just for one thing, at the top-left we see a [*Bing*](https://en.wikipedia.org/wiki/Bing_(search_engine)) search box, but *Bing* didn't even exist until 2009! An inspection of the crawl time stamps (these can be seen by clicking on the top-right *About this capture* button) reveals that this "snapshot" is really an amalgam of elements that were crawled at wildly varying dates, some as recently as 2018:
 
 ![](wayback-timestamps.png)
 
