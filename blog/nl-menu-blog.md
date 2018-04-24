@@ -101,19 +101,16 @@ Although at first glance the reconstructed site appears to be of much better qua
 
 - Links to categories that contain sub categories don't work in Firefox. A workaround is to right-click on the link and open it in a new tab (or disable JavaScript). In Chrome/Chromium these links work normally.
 - The site contains a number of forms that don't work because the associated CGI scripts are missing (these scripts are not on the CD-ROM).
-- The [*Colofon*](http://www.kbresearch.nl/nl-menu/nl-menu/nlmenu.nl/fset/zoekenplus.html?http://www.kbresearch.nl/nl-menu/nl-menu/nlmenu.nl/admin/colofon.html) page shows the URL *http://www.kbresearch.nl*, instead of the original *http://www.nl-menu.nl* (this is an unintended side-effect of the aforementioned script).
+- Some pages show the URL *http://www.kbresearch.nl*, instead of the original *http://www.nl-menu.nl*. This is an unintended side-effect of the script that was used to update the links.
 
 There may be more issues; please feel free to contact us if you spot anything that doesn't look quite right!
 
-Finally, the original ISO image of the recovered CD-ROM is available [here]().
-
-<!--
 ## Acknowledgements
 
-Thanks are due to the folllowing people for their help and suggestions: Annemarie Beunen, Willem Jan Faber, Kees Teszelszky, Lammert Zwaagstra.
--->
+Thanks are due to the folllowing people for their advice and suggestions: Annemarie Beunen, Willem Jan Faber, Kees Teszelszky, and Lammert Zwaagstra.
+
 ## Additional resources
 
 * [Serving a static website with the Apache web server (technical notes)](https://github.com/KBNLresearch/nl-menu-resources/blob/master/doc/serving-static-website-with-Apache.md)
 * [NL-menu (2004 snapshot at kbresearch.nl)](http://www.kbresearch.nl/nl-menu/)
-* [ISO image]()
+* [How can we improve our web collection? An evaluation of web archiving at the KB National Library of the Netherlands (2007-2017)](https://zenodo.org/record/881109)
