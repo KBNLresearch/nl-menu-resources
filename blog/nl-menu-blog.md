@@ -4,11 +4,11 @@
 
 Meanwile, the original *NL-menu* has been largely lost to the mists of time. Even though the Internet Archive's Wayback Machine contains [rather a lot of snapshots of the site](https://web.archive.org/web/*/www.nl-menu.nl), these are incomplete, and don't capture the original look and feel. For example, [this page](https://web.archive.org/web/20020603232609/http://www.nl-menu.nl:80/nlmenu.nl/fset/gz.html) is a snapshot from June 2002:
 
-![](wayback1.png)
+![](http://openpreservation.org/wp-content/uploads/2018/04/wayback1.png)
 
 However, this doesn't look even remotely like the site as it was in 2002. Just for one thing, at the top-left we see a [*Bing*](https://en.wikipedia.org/wiki/Bing_(search_engine)) search box, but *Bing* didn't even exist until 2009! An inspection of the crawl time stamps (these can be seen by clicking on the top-right *About this capture* button) reveals that this "snapshot" is really an amalgam of elements that were crawled at wildly varying dates, some as recently as 2018:
 
-![](wayback-timestamps.png)
+![](http://openpreservation.org/wp-content/uploads/2018/04/wayback-timestamps.png)
 
 *NL-menu* is not part of the [KB Web Archive](https://www.kb.nl/en/organisation/research-expertise/long-term-usability-of-digital-resources/web-archiving), as the KB only started its web archiving activities in 2007. The only remaining "complete" copies of *NL-menu* are three (recordable) CD-ROMs that were burned shortly before the site was taken offline in 2004.
 
@@ -38,7 +38,7 @@ Only half of the second disc could be recovered after a 16-hour recovery pass wi
 
 For the third disc, 99.8% of the data could be recovered after four rounds with *ddrescue* with four optical drives. Below image shows a visualisation of the recovery process (made with [*ddrescueview*](https://sourceforge.net/projects/ddrescueview/)):
 
-![](ddrescue-cd3.png)
+![](http://openpreservation.org/wp-content/uploads/2018/04/ddrescue-cd3.png)
 
 Here, each block respresents one 2048-byte sector, where a red block is a sector with read errors. In this case 468 sectors spread across the disc are unreadable. This means that any files or folder definitions that occupy any of those sectors will be damaged. The resulting ISO image turned out to be readable, but one of the top-level directories (which contains half of the files on the disc) is not shown when the image is mounted or opened in an archive manager. So, we discarded this ISO image from any further processing as well. Unfortunately this disc did *not* turn out to be merely a copy of the first disc.
 
@@ -47,15 +47,15 @@ Here, each block respresents one 2048-byte sector, where a red block is a sector
 
 After mounting the ISO image of the first disc (i.e. the one that was recovered without errors) on a Linux machine, the following directory structure appears:
 
-![](caja-1.png)
+![](http://openpreservation.org/wp-content/uploads/2018/04/caja-1.png)
 
 The *nlmenu.nl* directory contains the Dutch-language version of the site, and *nlmenu.en* the English-language version (oddly, there's no top-level index page!). Here are the contents of the *nlmenu.nl* directory:
 
-![](caja-2.png)
+![](http://openpreservation.org/wp-content/uploads/2018/04/caja-2.png)
 
 If we open *index.html* in a browser (Firefox) we see this:
 
-![](index-from-fs.png)
+![](http://openpreservation.org/wp-content/uploads/2018/04/index-from-fs.png)
 
 We can see here that several images are not rendered; also none of the (internal) hyperlinks work. This happens because all file paths in the underlying HTML are defined relative to the site's root directory, and these don't resolve properly on the local file system. In order to render the site correctly we have to serve it from a locally installed web server.
 
@@ -63,7 +63,7 @@ We can see here that several images are not rendered; also none of the (internal
 
 So, we installed the [*Apache web* server](https://en.wikipedia.org/wiki/Apache_HTTP_Server) on a Linux machine, and then configured it to serve the unpacked contents of the ISO image. More details on how we did this can be found in [these technical notes](https://github.com/KBNLresearch/nl-menu-resources/blob/master/doc/serving-static-website-with-Apache.md). This allowed us to render the English-language version the site on [localhost](https://en.wikipedia.org/wiki/Localhost):
 
-![](nlmenu-english.png)
+![](http://openpreservation.org/wp-content/uploads/2018/04/nlmenu-english.png)
 
 Oddly, loading the Dutch-language version would immediately redirect the browser to the old 'live' web address at <http://www.nl-menu.nl/>. An inspection of the HTML revealed that this was due to some JavaScript:
 
@@ -93,7 +93,7 @@ The above changes were all made using this [script](https://github.com/KBNLresea
 
 The result of all this is available here:
 
-<http://www.kbresearch.nl/nl-menu/>
+<http://www.kbresearch.nl/nl-menu/nl-menu/>
 
 This reflects the state of *NL-menu* briefly before it closed down in 2004.
 
@@ -111,6 +111,6 @@ Thanks are due to the folllowing people for their advice and suggestions: Annema
 
 ## Additional resources
 
+* [NL-menu (2004 snapshot at kbresearch.nl)](http://www.kbresearch.nl/nl-menu/nl-menu/)
 * [Serving a static website with the Apache web server (technical notes)](https://github.com/KBNLresearch/nl-menu-resources/blob/master/doc/serving-static-website-with-Apache.md)
-* [NL-menu (2004 snapshot at kbresearch.nl)](http://www.kbresearch.nl/nl-menu/)
 * [How can we improve our web collection? An evaluation of web archiving at the KB National Library of the Netherlands (2007-2017)](https://zenodo.org/record/881109)

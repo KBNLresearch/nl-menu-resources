@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="" xml:lang="">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>Eerste Nederlandse webindex gered van CD-ROM</title>
+  <style type="text/css">
+      code{white-space: pre-wrap;}
+      span.smallcaps{font-variant: small-caps;}
+      span.underline{text-decoration: underline;}
+      div.column{display: inline-block; vertical-align: top; width: 50%;}
+  </style>
+  <!--[if lt IE 9]>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/html5shiv/3.7.3/html5shiv-printshiv.min.js"></script>
+  <![endif]-->
+</head>
+<body>
+<header>
+<h1 class="title">Eerste Nederlandse webindex gered van CD-ROM</h1>
+</header>
+<p>De website <em>NL-menu</em> was de eerste Nederlandse webindex. De site is in 1992 opgericht op initiatief van <a href="https://en.wikipedia.org/wiki/SURFnet">SURFnet</a>, de Nederlandse universiteiten en de KB. Vanaf midden jaren &#8217;90 werd de site volledig door de KB beheerd. In 2004 <a href="https://www.robcoers.nl/nl-menu-is-straks-niet-meer-leve-nl-menu/">stopte de KB met <em>NL-menu</em></a>, waarna de site offline is gehaald. In 2006 is de domeinnaam <em>nl-menu.nl</em> verkocht aan een bedrijf dat de naam gebruikte voor een eigen webindex, die deels was gebaseerd op de oorspronkelijke <em>NL-menu</em> site.</p>
+<p>Het oorspronkelijke <em>NL-menu</em> is intussen in de vergetelheid geraakt. In het webarchief van het <a href="https://archive.org/">Internet Archive</a> zijn nog wel behoorlijk wat <a href="https://web.archive.org/web/*/www.nl-menu.nl">snapshots van <em>NL-menu</em> terug te vinden</a>, maar deze zijn onvolledig, en bovendien niet representatief voor hoe de site er in werkelijkheid uitzag. Zo is <a href="https://web.archive.org/web/20020603232609/http://www.nl-menu.nl:80/nlmenu.nl/fset/gz.html">deze pagina</a> een snapshot uit juni 2002:</p>
+<p><img src="wayback1.png" /></p>
+<p>Linksboven is een <a href="https://en.wikipedia.org/wiki/Bing_(search_engine)"><em>Bing</em></a> zoekvenster te zien, maar omdat <em>Bing</em> pas in 2009 is opgericht kan de site er in 2002 onmogelijk uitgezien hebben zoals deze snapshot. De discrepantie is het gevolg van de manier waarop Internet Archive websites binnenhaalt en weergeeft. In dit geval is de pagina in 2002 niet volledig binnengehaald. Enkele ontbrekende elementen (o.a. de linker en rechter menuframes) zijn vervolgens pas 10 jaar later binnengehaald. De weergave van in Internet Archive is hierdoor een soort amalgaam van de pagina op verschillende tijdstippen, die nog maar weinig zegt over hoe de pagina er in werkelijkheid uitzag.</p>
+<p>Omdat de KB pas in 2007 is begonnen met webarchivering, is <em>NL-menu</em> ook niet te vinden in het <a href="https://www.kb.nl/bronnen-zoekwijzers/databanken-mede-gemaakt-door-de-kb/webarchief-kb">KB Webarchief</a>. Wel zijn er, kort voordat <em>NL-menu</em> in 2004 offline werd gehaald, drie CD-ROMs gebrand met daarop de inhoud van de site.</p>
+<p><em>NL-menu</em> is van historisch belang, omdat het een unieke bron van informatie is over de (relatief) vroege geschiedenis van het Nederlandse web. We hebben daarom geprobeerd een reconstructie te maken van de site zoals deze er in het begin van 2004 bij lag. Het belangrijkste doel hiervan was om de site met terugwerkende kracht in het webarchief te kunnen opnemen.</p>
+<h2 id="uitlezen-van-de-cd-roms">Uitlezen van de CD-ROMs</h2>
+<p>De eerste stap hierbij was het uitlezen van de data van de CD-ROMs. Een probleem hierbij is dat (zelfgebrande) CD-ROMs bijzonder vergankelijk zijn. Het was dan ook geen verrassing dat <em>alle</em> schijfjes in eerste instantie leesfouten opleverden! Hierop hebben we een geprobeerd de schijfjes uit te lezen met een gespecialiseerde data-recovery tool (<a href="https://www.gnu.org/software/ddrescue/"><em>ddrescue</em></a>). Hiermee lukte het ons om de data van &#233;&#233;n van de CD-ROMs volledig te redden. Hiervoor was het wel nodig om <em>ddrescue</em> meerdere opeenvolgende keren te draaien, met in totaal vier verschillende CD-drives. De overige twee CD-ROMs bleken in een dermate slechte staat te zijn, dat ze voor een reconstructie van <em>NL-menu</em> niet meer te gebruiken waren.</p>
+<h2 id="reconstructie-van-de-website">Reconstructie van de website</h2>
+<p>De uitleesstap leverde een <a href="https://nl.wikipedia.org/wiki/ISO_(bestandsindeling)">ISO-image</a> op dat een mappenstructuur bevat met alle bestanden van de <em>NL-menu</em> site. Voor een reconstructie van de site zoals deze er oorspronkelijk uitzag is nog een extra stap nodig, waarbij de bestanden uitgeleverd worden met een <a href="https://nl.wikipedia.org/wiki/Webserver">webserver</a>. Hiervoor hebben we lokaal op een computer de <a href="https://nl.wikipedia.org/wiki/Apache_(webserver)">Apache webserver</a> ge&#239;nstalleeerd, en een configuratie aangemaakt voor de <em>NL-menu</em> mappenstructuur. Resultaat hiervan is een lokaal werkende versie van de site, die geschikt is voor opname in het KB webarchief. Als illustratie is hier de Engelstalige homepage:</p>
+<p><img src="nlmenu-english.png" /></p>
+<h2 id="publiek-toegankelijke-versie">Publiek toegankelijke versie</h2>
+<p>Omdat het webarchief alleen toegankelijk is vanuit de leeszalen van de KB, hebben we er in dit geval voor gekozen om de gereconstrueerde versie van <em>NL-menu</em> ook beschikbaar te stellen vanaf de KB Onderzoekswebsite. Hierbij hebben we wel enkele kleine aanpassingen moeten doen op de originele bestanden. Het gaat hierbij voornamelijk om het updaten van (relatieve en absolute) interne links.</p>
+<p>Het resultaat is vanaf de volgende link toegankelijk:</p>
+<p><a href="http://www.kbresearch.nl/nl-menu/" class="uri">http://www.kbresearch.nl/nl-menu/</a></p>
+<p>Een paar kleine dingen om op te letten bij het bekijken van de site:</p>
+<ul>
+<li>Links naar categorie&#235;n die sub-categorie&#235;n bevatten werken niet goed in Firefox. Workaround: gebruik de rechtermuisknop en open de subcategorie in een nieuwe tab (of zet JavaScript uit). In Chrome/Chromium werken deze links wel.</li>
+<li>Formulieren werken niet vanwege het ontbreken van de daaraan gekoppelde CGI scripts (deze zijn destijds niet op de CD-ROM gezet).</li>
+<li>Op de <a href="http://www.kbresearch.nl/nl-menu/nl-menu/nlmenu.nl/fset/zoekenplus.html?http://www.kbresearch.nl/nl-menu/nl-menu/nlmenu.nl/admin/colofon.html">colofonpagina</a> is de URL <em>http://www.kbresearch.nl</em> te zien, in plaats van de originele <em>http://www.nl-menu.nl</em> URL. Dit is een bij-effect van het script dat is gebruikt voor het aanp[assen van interne links.</li>
+</ul>
+<h2 id="meer-informatie">Meer informatie</h2>
+<p>Op de website van de <em>Open Preservation Foundation</em> is een (Engelstalige) blogpost met meer gedetailleerde informatie over de reddingspoging van <em>NL-menu</em>:</p>
+<p>*<a href="">Resurrecting the first Dutch web index: NL-menu revisited</a></p>
+<p>Meer informatie over webarchivering op de KB:</p>
+<p>*<a href="https://zenodo.org/record/881109">How can we improve our web collection? An evaluation of webarchiving at the KB National Library of the Netherlands (2007-2017)</a></p>
+</body>
+</html>
