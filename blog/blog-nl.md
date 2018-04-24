@@ -30,19 +30,19 @@ Omdat het webarchief alleen toegankelijk is vanuit de leeszalen van de KB, hebbe
 
 Het resultaat is vanaf de volgende link toegankelijk:
 
-<http://www.kbresearch.nl/nl-menu/>
+<http://www.kbresearch.nl/nl-menu/nl-menu/>
 
 Een paar kleine dingen om op te letten bij het bekijken van de site:
 
 - Links naar categorieën die sub-categorieën bevatten werken niet goed in Firefox. Workaround: gebruik de rechtermuisknop en open de subcategorie in een nieuwe tab (of zet JavaScript uit). In Chrome/Chromium werken deze links wel.
 - Formulieren werken niet vanwege het ontbreken van de daaraan gekoppelde CGI scripts (deze zijn destijds niet op de CD-ROM gezet).
-- Op de [colofonpagina](http://www.kbresearch.nl/nl-menu/nl-menu/nlmenu.nl/fset/zoekenplus.html?http://www.kbresearch.nl/nl-menu/nl-menu/nlmenu.nl/admin/colofon.html) is de URL *http://www.kbresearch.nl* te zien, in plaats van de originele *http://www.nl-menu.nl* URL. Dit is een bij-effect van het script dat is gebruikt voor het aanp[assen van interne links.
+- Op de een aantal pagina's is de URL *http://www.kbresearch.nl* te zien, in plaats van de originele *http://www.nl-menu.nl* URL. Dit is een bij-effect van het script dat is gebruikt voor het aanpassen van interne links.
 
 ## Meer informatie
 
 Op de website van de *Open Preservation Foundation* is een (Engelstalige) blogpost met meer gedetailleerde informatie over de reddingspoging van *NL-menu*:
 
-*[Resurrecting the first Dutch web index: NL-menu revisited]()
+*[Resurrecting the first Dutch web index: NL-menu revisited](http://openpreservation.org/blog/2018/04/24/resurrecting-the-first-dutch-web-index-nl-menu-revisited/)
 
 Meer informatie over webarchivering op de KB:
 
