@@ -42,10 +42,10 @@ Een paar kleine dingen om op te letten bij het bekijken van de site:
 
 Op de website van de *Open Preservation Foundation* is een (Engelstalige) blogpost met meer gedetailleerde informatie over de reddingspoging van *NL-menu*:
 
-*[Resurrecting the first Dutch web index: NL-menu revisited](http://openpreservation.org/blog/2018/04/24/resurrecting-the-first-dutch-web-index-nl-menu-revisited/)
+- [Resurrecting the first Dutch web index: NL-menu revisited](http://openpreservation.org/blog/2018/04/24/resurrecting-the-first-dutch-web-index-nl-menu-revisited/)
 
 Meer informatie over webarchivering op de KB:
 
-*[How can we improve our web collection? An evaluation of webarchiving at the KB National Library of the Netherlands (2007-2017)](https://zenodo.org/record/881109)
+- [How can we improve our web collection? An evaluation of webarchiving at the KB National Library of the Netherlands (2007-2017)](https://zenodo.org/record/881109)
 
 
