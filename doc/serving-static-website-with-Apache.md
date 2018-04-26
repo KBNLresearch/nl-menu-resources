@@ -120,7 +120,7 @@ Now enable the new one:
 
 ### 4. Add original domain to hosts file
 
-Open (with sudo priviliges) file `/etc/hosts/` in a text editor, and add a line that associates the IP address at which the site is locally available to its original URL. For example:
+Open (with sudo priviliges) file `/etc/hosts` in a text editor, and add a line that associates the IP address at which the site is locally available to its original URL. For example:
 
     127.0.0.1	www.nl-menu.nl
 
