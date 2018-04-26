@@ -81,8 +81,9 @@ Adding a site involves the following steps:
 
 1. Put the site contents somewhere on the file system (by default in a subdirectory of folder `/var/www`, although any directory can be used).
 2. Create a configuration file under `/etc/apache2/sites-available`
-3. Activate the configuration file.
-4. Restart the server.
+3. Activate the configuration file
+4. Add original domain to hosts file
+5. Restart the server.
 
 ### 1. Put site contents on the file system
 
