@@ -6,7 +6,7 @@ These notes cover the very basics of:
 
 - how to set up the Apache web server
 - how to restrict access to localhost
-- how to install a site (for example from a static CD-ROM dump) 
+- how to install a site (for example from a static CD-ROM dump)
 
 These notes are based on Apache/2.4.18 on a Linux-based system. They only cover static HTML-based sites. Serving dynamic sites also requires an additional application server and a database (i.e. a full [*LAMP stack*](https://en.wikipedia.org/wiki/LAMP_(software_bundle))).
 
@@ -117,16 +117,23 @@ Now enable the new one:
 
     sudo a2ensite nl-menu.conf
 
-### 4. Restart the server
+### 4. Add original domain to hosts file
+
+Open (with sudo priviliges) file `/etc/hosts/` in a text editor, and add a line that associates the IP address at which the site is locally available to its original URL. For example:
+
+    127.0.0.1	www.nl-menu.nl
+
+Then save the file.
+
+### 5. Restart the server
 
 Type this:
 
     sudo systemctl restart apache2
 
-All done! The newly installed site is now available at the following URL in your web browser:
+All done! The newly installed site is now available at the original URL in your web browser:
 
-<http://127.0.0.1/>
-
+<http://www.nl-menu.nl> (which should redirect to <http://127.0.0.1/>)
 
 ## Additional resources
 
