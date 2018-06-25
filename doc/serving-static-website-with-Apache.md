@@ -7,6 +7,8 @@ These notes cover the very basics of:
 - how to set up the Apache web server
 - how to restrict access to localhost
 - how to install a site (for example from a static CD-ROM dump)
+- how to crawl the site so it can be ingested into a web archive
+- how to test the resulting WARC
 
 These notes are based on Apache/2.4.18 on a Linux-based system. They only cover static HTML-based sites. Serving dynamic sites also requires an additional application server and a database (i.e. a full [*LAMP stack*](https://en.wikipedia.org/wiki/LAMP_(software_bundle))).
 
@@ -136,8 +138,73 @@ All done! The newly installed site is now available at the original URL in your 
 
 <http://www.nl-menu.nl> (which should redirect to <http://127.0.0.1/>)
 
+## Crawl the site for use in web archive
+
+### Preparation: change machine system date to approximate date of snapshot
+
+    sudo date --set="2004-01-23 21:03:09.000"
+
+Two methods listed in [van Luin](http://docplayer.nl/17762647-Ervaringen-met-website-archivering-in-het-nationaal-archief.html):
+
+1. Heritrix
+2. Wget
+
+### Heritrix
+
+Installed Heritrix 3.3. 0 (build heritrix-3.3.0-20180529.100446-105). For some reason Heritrix appears to ignore the domain to hosts file, crawling (some elements of) the "live" site instead. If I disable network acesss, the crawl job runs indefinitely without ever downloading any actual data. Tried this for several seed URLs, such as:
+
+    http://www.nl-menu.nl/nlmenu.nl/
+
+and
+
+    http://www.nl-menu.nl/nlmenu.nl/nlmenu.shtml
+
+These all give the same result. So I gave up on this and moved to the wget method below.
+
+## Wget
+
+To completely rule out anything from the "live" site leaking into the crawl, I disabled the network connection before starting the crawl. I then ran Wget following the example in van Luin (minus the `-w` parameter, which is not needed when crawling from our own local machine):
+
+    wget -m -k -p -E --warc-file="NL-menu" http://www.nl-menu.nl/nlmenu.nl/nlmenu.shtml &>wget_stdout_stderr.txt
+
+This results in a 200 MB compressed WARC file. Throwing WARC at [warctools](https://github.com/internetarchive/warctools)' *warcvalid* doesn't result in any errors.
+
+## Testing the archived site
+
+Install [pywb](https://github.com/webrecorder/pywb):
+
+    sudo python3 -m pip install pywb
+
+Set up test directory:
+
+    mkdir test-pywb
+    cd test-pywb
+
+Create archive:
+
+    wb-manager init my-web-archive
+
+Add NL-menu WARC:
+
+    wb-manager add my-web-archive /home/johan/NL-menu/warc-wget/NL-menu.warc.gz
+
+Start the server:
+
+    wayback
+
+Archived site is now available from:
+
+<http://localhost:8080/my-web-archive/20180625132742/http://www.nl-menu.nl/>
+
+Result:
+
+![](./img/nl-menu-pywb.png)
+
+Which appears to work fine!
+
 ## Additional resources
 
 * [Apache HTTP Server Documentation](https://httpd.apache.org/docs/)
 * [How To Install the Apache Web Server on Ubuntu 16.04](https://www.digitalocean.com/community/tutorials/how-to-install-the-apache-web-server-on-ubuntu-16-04)
 * [Make apache only accessible via 127.0.0.1](https://serverfault.com/questions/276963/make-apache-only-accessible-via-127-0-0-1-is-this-possible/276968#276968)
+* Jeroen van Luin: [Ervaringen met website-archivering in het Nationaal Archief](http://docplayer.nl/17762647-Ervaringen-met-website-archivering-in-het-nationaal-archief.html)
