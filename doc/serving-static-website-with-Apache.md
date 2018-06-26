@@ -202,6 +202,25 @@ Result:
 
 Which appears to work fine!
 
+## Comparison with files extracted from ISO image
+
+- ISO image: 86567 items, totalling 490,4 MB
+- Scraped by wget: 85891 items, totalling 432,5 MB
+
+Difference: 671 items (files and/or folders), 57.9 MB!
+
+Detailed comparison:
+
+    diff --brief -r /home/johan/NL-menu/cd1-intact/NL-menu/ /home/johan/NL-menu/warc-wget/www.nl-menu.nl/ | grep "Only in /home/johan/NL-menu/cd1-intact/NL-menu" > diffdir.txt
+
+Result [here](./diffdir.txt). In particular, the following items are missing in the wget crawled version:
+
+- 499 .gif files
+- 83 .html files
+- 36 .txt files
+
+Not entirely clear why this happens, could be orphaned resources that are not referenced by the site.
+
 ## Additional resources
 
 * [Apache HTTP Server Documentation](https://httpd.apache.org/docs/)
