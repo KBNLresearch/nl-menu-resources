@@ -221,6 +221,41 @@ Result [here](./diffdir.txt). In particular, the following items are missing in 
 
 Not entirely clear why this happens, could be orphaned resources that are not referenced by the site.
 
+## Info on origin of files in WARC in metadata
+
+The WARC was crawled from a locally reconstructed version of the site and not from the live web. This is something that should somehow be recorded in metadata. Using the *warcdump* tool from [warctools](https://github.com/internetarchive/warctools):
+
+    warcdump NL-menu.warc.gz > NL-menu-dump.txt
+
+Example record:
+
+    archive record at NL-menu.warc.gz:778658
+    Headers:
+        WARC-Type:request
+        WARC-Target-URI:<http://www.nl-menu.nl/nlmenu.nl/new/home.html>
+        Content-Type:application/http;msgtype=request
+        WARC-Date:2004-01-23T20:04:06Z
+        WARC-Record-ID:<urn:uuid:a733b6c2-f31f-4bb1-822c-63fa08cdb2e2>
+        WARC-IP-Address:127.0.0.1
+        WARC-Warcinfo-ID:<urn:uuid:8a56cc17-3a38-4146-8594-3f0f39d31d51>
+        WARC-Block-Digest:sha1:23FDBRG7W5PPQHPA7TZOJCFNFEV76X55
+        Content-Length:230
+    Content Headers:
+        Content-Type : application/http;msgtype=request
+        Content-Length : 230
+    Content:
+        GET /nlmenu\x2Enl/new/home\x2Ehtml HTTP/1\x2E1\xD\xAReferer\x3A http\x3A//www\x2Enl\x2Dmenu\x2Enl/nlmenu\x2Enl/resources/linkermenu\x2Ehtml\xD\xAUser\x2DAgent\x3A Wget/1\x2E19 \x28linux\x2Dgnu\x29\xD\xAAccept\x3A \x2A/\x2A\xD\xAAccept\x2DEncoding\x3A identity\xD\xAHost\x3A www\x2Enl\x2Dmenu\x2Enl\xD\xAConnection\x3A Keep\x2DAlive\xD\xA\xD\xA
+        ...
+Note this line:
+
+    WARC-IP-Address:127.0.0.1
+
+The field *WARC-IP-Address* is defined in the [WARC specification](https://iipc.github.io/warc-specifications/specifications/warc-format/warc-1.1/#warc-ip-address) as:
+
+> The WARC-IP-Address is the numeric Internet address contacted to retrieve any included content. An IPv4 address shall be written as a “dotted quad”; an IPv6 address shall be written as specified in [RFC4291]. For a HTTP retrieval, this will be the IP address used at retrieval time corresponding to the hostname in the record’s target-Uri.
+
+In this case, from the value 127.0.0.1 (=localhost) we can see that the files inside the warc originate from a local copy.
+
 ## Additional resources
 
 * [Apache HTTP Server Documentation](https://httpd.apache.org/docs/)
