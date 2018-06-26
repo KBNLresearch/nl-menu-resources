@@ -221,6 +221,21 @@ Result [here](./diffdir.txt). In particular, the following items are missing in 
 
 Not entirely clear why this happens, could be orphaned resources that are not referenced by the site.
 
+## Missing pages/resources
+
+All of the following pages don't work, and give error "The url http://www.nl-menu.nl/nlmenu.nl/fset/ could not be found in this collection": 
+
+"aanmelden" / "wijzigen" from home page, right-hand menu:
+
+<http://localhost:8080/my-web-archive/20040123200406/http://www.nl-menu.nl/nlmenu.nl/fset/zoekenplus.html?http://www.nl-menu.nl/nlmenu.nl/admin/aanmeldform.html>
+
+Having arrived on this page, the other links at the right hand menu (FAQ, colofon, etc) don't work either! But behaviour seems to depend on previous page we arrived from. Very strange. 
+
+"digitalisering" (NL homepage, bottom-left under "Nieuwe rubrieken"):
+
+<http://localhost:8080/my-web-archive/20040123200406/http://www.nl-menu.nl/nlmenu.nl/fset/zoekenplus.html?http://www.nl-menu.nl/nlmenu.nl/sections/236/1868.html>
+
+
 ## Info on origin of files in WARC in metadata
 
 The WARC was crawled from a locally reconstructed version of the site and not from the live web. This is something that should somehow be recorded in metadata. Using the *warcdump* tool from [warctools](https://github.com/internetarchive/warctools):
