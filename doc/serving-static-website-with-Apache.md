@@ -225,16 +225,148 @@ Not entirely clear why this happens, could be orphaned resources that are not re
 
 All of the following pages don't work, and give error "The url http://www.nl-menu.nl/nlmenu.nl/fset/ could not be found in this collection": 
 
-"aanmelden" / "wijzigen" from home page, right-hand menu:
+### "aanmelden" / "wijzigen" from home page, right-hand menu:
 
 <http://localhost:8080/my-web-archive/20040123200406/http://www.nl-menu.nl/nlmenu.nl/fset/zoekenplus.html?http://www.nl-menu.nl/nlmenu.nl/admin/aanmeldform.html>
 
-Having arrived on this page, the other links at the right hand menu (FAQ, colofon, etc) don't work either! But behaviour seems to depend on previous page we arrived from. Very strange. 
+Having arrived on this page, the other links at the right hand menu (FAQ, colofon, etc) don't work either! But behaviour seems to depend on previous page we arrived from. Very strange.
 
-"digitalisering" (NL homepage, bottom-left under "Nieuwe rubrieken"):
+On "live" site, going here:
+
+<http://www.nl-menu.nl/nlmenu.nl/admin/aanmeldform.html>
+
+Redirects to:
+
+<http://www.nl-menu.nl/nlmenu.nl/fset/zoekenplus.html?http://www.nl-menu.nl/nlmenu.nl/admin/aanmeldform.html>
+
+This doesn't happen in the archived site! The resource is present in the WARC though:
+
+    warcdump NL-menu.warc.gz > NL-menu-dump.txt
+    grep "http://www.nl-menu.nl/nlmenu.nl/admin/aanmeldform.html" NL-menu-dump.txt
+
+Result:
+
+    WARC-Target-URI:<http://www.nl-menu.nl/nlmenu.nl/admin/aanmeldform.html>
+    WARC-Target-URI:http://www.nl-menu.nl/nlmenu.nl/admin/aanmeldform.html
+
+Looking at the source of the page, there's this:
+
+    <SCRIPT LANGUAGE="JavaScript">
+    <!--
+            var navPrinting = false;
+            if ((navigator.appName + navigator.appVersion.substring(0, 1)) == "Netscape4") {
+                navPrinting = (self.innerHeight == 0) && (self.innerWidth == 0);}
+            if ((self.name != 'text') && (self.location.protocol != "file:") && !navPrinting)
+            if (top.location.href == location.href) {
+                    // deze pagina opnieuw openen, maar dan binnen frameset
+                    top.location.href = "http://www.nl-menu.nl/nlmenu.nl/fset/zoekenplus.html?" + unescape(document.URL);
+            }
+    // -->
+    </SCRIPT>
+
+So, the JavaScript re-opens the page within a frame set. So perhaps the problem occurs because the JavaScript fails to run in the archived version? Possibly related to this: pywb actually uses JavaScript to render each archived page inside an iframe. For example, "view source" on the archived homepage produces this (which is *not* the NL-menu source!) :
+
+    <!DOCTYPE html>
+    <html>
+    <head>
+    <style>
+    html, body
+    {
+    height: 100%;
+    margin: 0px;
+    padding: 0px;
+    border: 0px;
+    overflow: hidden;
+    }
+
+    </style>
+    <script src='http://localhost:8080/static/wb_frame.js'> </script>
+
+    <!-- default banner, create through js -->
+    <script src='http://localhost:8080/static/default_banner.js'> </script>
+    <link rel='stylesheet' href='http://localhost:8080/static/default_banner.css'/>
+
+
+    </head>
+    <body style="margin: 0px; padding: 0px;">
+    <div id="wb_iframe_div">
+    <iframe id="replay_iframe" frameborder="0" seamless="seamless" scrolling="yes" class="wb_iframe"></iframe>
+    </div>
+    <script>
+    var cframe = new ContentFrame({"url": "http://www.nl-menu.nl/nlmenu.nl/nlmenu.shtml" + window.location.hash,
+                                    "prefix": "http://localhost:8080/my-web-archive/",
+                                    "request_ts": "20040123200406",
+                                    "iframe": "#replay_iframe"});
+
+    </script>
+    </body>
+    </html>
+
+Also tried: disable JavaScript in browser on "live" site: page is still displayed!
+
+BUT: if I am on one of the category pages, e.g.:
+
+<http://localhost:8080/my-web-archive/20040123200406/http://www.nl-menu.nl/nlmenu.nl/fset/bedrijven.html>
+
+and then click on "aanmelden" (right-hand menu), the page loads normaly, *even though the URL is identical*!! Again, opening the URL in a new tab still produces the error.
+
+
+Open <http://www.nl-menu.nl/nlmenu.nl/fset/zoekenplus.html>: works on "live" site, fails on archived site. 
+
+
+### "digitalisering" (NL homepage, bottom-left under "Nieuwe rubrieken"):
 
 <http://localhost:8080/my-web-archive/20040123200406/http://www.nl-menu.nl/nlmenu.nl/fset/zoekenplus.html?http://www.nl-menu.nl/nlmenu.nl/sections/236/1868.html>
 
+Same as above (JavaScript).
+
+## changed resources
+
+Command:
+
+    diff --brief -r /home/johan/NL-menu/cd1-intact/NL-menu/ /home/johan/NL-menu/warc-wget/www.nl-menu.nl/ | grep " differ" > diff.txt
+
+Produces > 84000 entries like this :
+
+    Files /home/johan/NL-menu/cd1-intact/NL-menu/nlmenu.en/admin/aanmeldform.html and /home/johan/NL-menu/warc-wget/www.nl-menu.nl/nlmenu.en/admin/aanmeldform.html differ
+    Files /home/johan/NL-menu/cd1-intact/NL-menu/nlmenu.en/admin/colofon.html and /home/johan/NL-menu/warc-wget/www.nl-menu.nl/nlmenu.en/admin/colofon.html differ
+
+So how do these files differ?
+
+    diff /home/johan/NL-menu/cd1-intact/NL-menu/nlmenu.en/admin/aanmeldform.html /home/johan/NL-menu/warc-wget/www.nl-menu.nl/nlmenu.en/admin/aanmeldform.html
+
+Result:
+
+    17c17
+    < <link rel="stylesheet" href="/nlmenu.nl/styles_nlmenu.css">
+    ---
+    > <link rel="stylesheet" href="../../nlmenu.nl/styles_nlmenu.css">
+    19c19
+    < <body bgcolor="#FFFFFF" background="/nlmenu.nl/images/achtergrond_tekst.gif">
+    ---
+    > <body bgcolor="#FFFFFF" background="../../nlmenu.nl/images/achtergrond_tekst.gif">
+    22c22
+    < <td bgcolor="#FF9933" align="right" valign="top"><img src="/nlmenu.nl/images/kop_aanmelden.eng.gif" align="right" border=0 alt=""></td>
+    ---
+    > <td bgcolor="#FF9933" align="right" valign="top"><img src="../../nlmenu.nl/images/kop_aanmelden.eng.gif" align="right" border=0 alt=""></td>
+    29c29
+    < <img src="/nlmenu.nl/images/aanmelden1.gif" width="80" height="70" align="right"
+    ---
+    > <img src="../../nlmenu.nl/images/aanmelden1.gif" width="80" height="70" align="right"
+    77,80c77,80
+    < <A HREF="/nlmenu.nl/admin/aanmeldform.html">NL-menu Registration Form</A> (in Dutch) |
+    < <a href="/nlmenu.en/nlinfo.html">NL-menu Mission Statement</a></p>
+    < <p><img src="/nlmenu.nl/images/lijntje.gif" alt="" width="10" height="19"><br>
+    < <span class="klein">&copy; <a target="_top" href="http://www.nl-menu.nl/">NL-menu: de webindex voor Nederland</a>, sinds 1992</span></p></td>
+    ---
+    > <A HREF="../../nlmenu.nl/admin/aanmeldform.html">NL-menu Registration Form</A> (in Dutch) |
+    > <a href="../nlinfo.html">NL-menu Mission Statement</a></p>
+    > <p><img src="../../nlmenu.nl/images/lijntje.gif" alt="" width="10" height="19"><br>
+    > <span class="klein">&copy; <a target="_top" href="../../index.html">NL-menu: de webindex voor Nederland</a>, sinds 1992</span></p></td>
+
+So differences are all links that were re-written by wget. If we run wget without the -k (= --convert-links) switch, all files remain unchanged.
+
+**Question**: so why use this switch in the first place?
 
 ## Info on origin of files in WARC in metadata
 
