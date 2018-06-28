@@ -207,6 +207,8 @@ Result:
 
 Which appears to work fine!
 
+<!-- TODO: move below sections to separate document-->
+
 ## Comparison with files extracted from ISO image
 
 Number of files in (extracted) ISO image:
