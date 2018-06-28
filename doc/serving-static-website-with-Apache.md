@@ -221,6 +221,8 @@ Result [here](./diffdir.txt). In particular, the following items are missing in 
 
 Not entirely clear why this happens, could be orphaned resources that are not referenced by the site.
 
+TODO: do this comparison from the .CDX file. Use grep to check if they are referenced from any of the HTML.
+
 ## Missing pages/resources
 
 All of the following pages don't work, and give error "The url http://www.nl-menu.nl/nlmenu.nl/fset/ could not be found in this collection": 
