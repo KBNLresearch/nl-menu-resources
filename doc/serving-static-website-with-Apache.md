@@ -163,9 +163,14 @@ These all give the same result. So I gave up on this and moved to the wget metho
 
 ## Wget
 
-To completely rule out anything from the "live" site leaking into the crawl, I disabled the network connection before starting the crawl. I then ran Wget following the example in van Luin (minus the `-w` parameter, which is not needed when crawling from our own local machine):
+To completely rule out anything from the "live" site leaking into the crawl, I disabled the network connection before starting the crawl. I then ran Wget following a modified version of the example in van Luin[^1]:
 
-    wget -m -k -p -E --warc-file="NL-menu" http://www.nl-menu.nl/nlmenu.nl/nlmenu.shtml &>wget_stdout_stderr.txt
+    wget --mirror \
+        --page-requisites \
+        --warc-file="nl-menu" \
+        --warc-cdx \
+        --output-file="nl-menu.log" \
+        http://www.nl-menu.nl/nlmenu.nl/nlmenu.shtml
 
 This results in a 200 MB compressed WARC file. Throwing WARC at [warctools](https://github.com/internetarchive/warctools)' *warcvalid* doesn't result in any errors.
 
@@ -186,7 +191,7 @@ Create archive:
 
 Add NL-menu WARC:
 
-    wb-manager add my-web-archive /home/johan/NL-menu/warc-wget/NL-menu.warc.gz
+    wb-manager add my-web-archive /home/johan/NL-menu/warc-wget/nl-menu.warc.gz
 
 Start the server:
 
@@ -194,7 +199,7 @@ Start the server:
 
 Archived site is now available from:
 
-<http://localhost:8080/my-web-archive/20180625132742/http://www.nl-menu.nl/>
+<http://localhost:8080/my-web-archive/20040123201017/http://www.nl-menu.nl/>
 
 Result:
 
@@ -204,16 +209,37 @@ Which appears to work fine!
 
 ## Comparison with files extracted from ISO image
 
-- ISO image: 86567 items, totalling 490,4 MB
-- Scraped by wget: 85891 items, totalling 432,5 MB
+Number of files in (extracted) ISO image:
 
-Difference: 671 items (files and/or folders), 57.9 MB!
+    find /var/www/www.nl-menu.nl -type f | wc -l
+
+Result:
+
+    85644
+
+Number of files scraped by wget (from dir tree created by wget):
+
+    find /home/johan/NL-menu/warc-wget-noextensionadjust/www.nl-menu.nl -type f | wc -l
+
+Result:
+
+    84976
+
+Number of files scraped by wget (from cdx file, counting lines with substring " 200 ", which should identify all sucessfully scraped files):
+
+    grep " 200 " nl-menu.cdx | wc -l
+
+Result:
+
+    84976
+
+Which is identical to the count from the fs. Difference: 668 files. These files are part of the ISO, but they weren't scraped by wget.
 
 Detailed comparison:
 
-    diff --brief -r /home/johan/NL-menu/cd1-intact/NL-menu/ /home/johan/NL-menu/warc-wget/www.nl-menu.nl/ | grep "Only in /home/johan/NL-menu/cd1-intact/NL-menu" > diffdir.txt
+    diff --brief -r /var/www/www.nl-menu.nl /home/johan/NL-menu/warc-wget-noextensionadjust/www.nl-menu.nl/ | grep "Only in /var/www/" > diffdir.txt
 
-Result [here](./diffdir.txt). In particular, the following items are missing in the wget crawled version:
+Result [here](./diffdir.txt). In particular, the following items are missing in the wget crawled version[^2]:
 
 - 499 .gif files
 - 83 .html files
@@ -221,9 +247,28 @@ Result [here](./diffdir.txt). In particular, the following items are missing in 
 
 Not entirely clear why this happens, could be orphaned resources that are not referenced by the site.
 
-TODO: do this comparison from the .CDX file. Use grep to check if they are referenced from any of the HTML.
+## Search for references to missing files in html
 
-## Missing pages/resources
+One possible explanation for the missing files is that they are not referenced by any of the html files (or, to be more precise, the html parts that are crawled).
+
+We can test this by searching for the names of the missing files inside the html. For instance, using the *grep* tool:
+
+    grep -r "1580.html" /var/www/www.nl-menu.nl/ | wc -l
+
+This returns 110 references, whereas:
+
+    grep -r "frameset_zoekresultaten.html" /var/www/www.nl-menu.nl/ | wc -l
+
+returns 0.
+
+The following script does this for the names of *all* miising files: 
+
+[checkmissingitems.sh](../scripts/checkmissingitems.sh)
+
+
+TODO: use grep to check if missing files are referenced from any of the HTML.
+
+## Pages/resources that are not available in Pywb
 
 All of the following pages don't work, and give error "The url http://www.nl-menu.nl/nlmenu.nl/fset/ could not be found in this collection": 
 
@@ -322,6 +367,8 @@ Open <http://www.nl-menu.nl/nlmenu.nl/fset/zoekenplus.html>: works on "live" sit
 
 Same as above (JavaScript).
 
+
+<!-- Below only happens if wget is called with --convert-links switch
 ## changed resources
 
 Command:
@@ -369,6 +416,7 @@ Result:
 So differences are all links that were re-written by wget. If we run wget without the -k (= --convert-links) switch, all files remain unchanged.
 
 **Question**: so why use this switch in the first place?
+-->
 
 ## Info on origin of files in WARC in metadata
 
@@ -411,3 +459,7 @@ In this case, from the value 127.0.0.1 (=localhost) we can see that the files in
 * [How To Install the Apache Web Server on Ubuntu 16.04](https://www.digitalocean.com/community/tutorials/how-to-install-the-apache-web-server-on-ubuntu-16-04)
 * [Make apache only accessible via 127.0.0.1](https://serverfault.com/questions/276963/make-apache-only-accessible-via-127-0-0-1-is-this-possible/276968#276968)
 * Jeroen van Luin: [Ervaringen met website-archivering in het Nationaal Archief](http://docplayer.nl/17762647-Ervaringen-met-website-archivering-in-het-nationaal-archief.html)
+
+[^1]: Compared to van Luin's example, this leaves out the *-w* switch (since we are crawling from a local machine), the *-k* switch (since converting the links is not necessary for rendering the site) and the *-E* switch (don't think changing any extensions is really necessary or desired in this case, but I could be wrong?). It also adds the *--warc-cdx* command (which writes an index file) and the *--output-file* switch (which writes a log file)
+
+[^2]: The total number of items in the diff file is 637; expected number is 668! No idea why.
