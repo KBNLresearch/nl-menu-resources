@@ -261,12 +261,11 @@ This returns 110 references, whereas:
 
 returns 0.
 
-The following script does this for the names of *all* miising files: 
+The following script does this for the names of *all* msising files: 
 
 [checkmissingitems.sh](../scripts/checkmissingitems.sh)
 
-
-TODO: use grep to check if missing files are referenced from any of the HTML.
+Result [here](missingrefs.csv)
 
 ## Pages/resources that are not available in Pywb
 
