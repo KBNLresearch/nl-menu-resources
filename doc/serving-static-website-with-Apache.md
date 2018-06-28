@@ -265,7 +265,12 @@ The following script does this for the names of *all* msising files:
 
 [checkmissingitems.sh](../scripts/checkmissingitems.sh)
 
-Result [here](missingrefs.csv)
+Result [here](missingrefs.csv).
+
+TODO: discussion of results. Some "missing" file names are referenced numerous times. Possible explanations could be:
+
+1. Referenced files are files with identical name as referenced file (but in different dir)
+2. Files are referenced only by html files that by themselves are not referenced --> test by running grep against scraped directory!
 
 ## Pages/resources that are not available in Pywb
 
