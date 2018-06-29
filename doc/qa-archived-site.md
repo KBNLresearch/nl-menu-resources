@@ -10,7 +10,7 @@ Using [warctools](https://github.com/internetarchive/warctools)' *warcvalid* too
 
 This doesn't result in any errors.
 
-## Comparison with files extracted from ISO image
+## Compare number of files in archive against ISO image
 
 Number of files in (extracted) ISO image:
 
@@ -36,7 +36,7 @@ Result:
 
     84976
 
-Which is identical to the count from the fs. Difference: 668 files. These files are part of the ISO, but they weren't scraped by wget.
+Which (as expected) is identical to the count from the fs. Difference with respect to ISO image: 668 files. These files are part of the ISO, but they weren't scraped by wget.
 
 Detailed comparison:
 
@@ -52,28 +52,52 @@ Not entirely clear why this happens, could be orphaned resources that are not re
 
 ## Search for references to missing files in html
 
-One possible explanation for the missing files is that they are not referenced by any of the html files (or, to be more precise, the html parts that are crawled).
+One possible explanation for the missing files is that they are not referenced by any of the html files (or, to be more precise, the html files that are discovered by wget by crawling from the root document).
 
-We can test this by searching for the names of the missing files inside the html. For instance, using the *grep* tool:
+As a first attempt to test this, we can search for references to the names of the missing files inside the html. For instance, using the *grep* tool this is how we can count all references to "1580.html":
 
-    grep -r "1580.html" /var/www/www.nl-menu.nl/ | wc -l
+    grep -r -F "1580.html" /var/www/www.nl-menu.nl/ | wc -l
 
 This returns 110 references, whereas:
 
-    grep -r "frameset_zoekresultaten.html" /var/www/www.nl-menu.nl/ | wc -l
+    grep -r -F "frameset_zoekresultaten.html" /var/www/www.nl-menu.nl/ | wc -l
 
 returns 0.
 
-The following script does this for the names of *all* msising files: 
+The following script does this for the names[^3] of *all* missing files: 
 
 [checkmissingitems.sh](../scripts/checkmissingitems.sh)
 
-Result [here](missingrefs.csv).
+Result [here](./missingrefs.csv).
 
-TODO: discussion of results. Some "missing" file names are referenced numerous times. Possible explanations could be:
+From the results we see that 573 (90 %) of all missing file names have 0 references <!--TODO: update-->. This also explains why they were not discovered by wget: these files are simply not used by any of the content that results from crawling from the root document. A further 64 
 
-1. Referenced files are files with identical name as referenced file (but in different dir)
-2. Files are referenced only by html files that by themselves are not referenced --> test by running grep against scraped directory!
+
+- `nlmenu.nl/admin/nr-sects.txt`: several html files reference the name of this file in a comment (so it makes sense that the file itself is not included in the crawl)
+- `nlmenu.en/resources/alfabet_provincies.html`: referenced in `nlmenu.en/fset/provincie.html`, but this file is missing by itself!
+- `nlmenu.nl/admin/opdracht_verzonden.html`: referenced in `nlmenu.nl/admin/mailing.html` as attribute value of *input* tag:
+
+    `<input type="hidden" name="nextpage" value="http://www.nl-menu.nl/nlmenu.nl/admin/opdracht_verzonden.html">`
+    
+    So it seems wget doesn't parse input tags.
+
+- `nlmenu.nl/images/alfabet_a.gif`: referenced in various files (e.g. `nlmenu.en/resources/old/alfabet_sites.html`) as an argument of of JavaScript function:
+    
+    `<area shape="rect" coords="22,0,34,13" href="/nlmenu.en/w3all/www_a.html" target="inhoud" onClick="MM_swapImage('document.alfabetje','document.alfabetje','/nlmenu.nl/images/alfabet_a.gif')">`
+
+    So this doesn't appear to be picked up by weget as a dependency either (totally there are 51 gif files in the same directory, which are all not included in the crawl for the same reason).
+
+- `nlmenu.nl/images/gastenboek2.gif`: referenced in various html files under directories `nlmenu.en/admin/gastenboek/`and `nlmenu.nl/admin/gastenboek/`. But neither of these directories (nor their content) is present in the (wget) archived version. The NL-menu homepage also doesn't appear to link to any guestbook feature, so this might be an orphaned section of the site (there are 2 more gifs here that are part of the guestbook).
+
+- `nlmenu.nl/images/pijlbeneden.gif`: referenced by 222 html files (e.g. `nlmenu.en/sections/315/361/361.html`) as a JavaScript variable:
+
+    `var expandedWidget  = "/nlmenu.nl/images/pijlbeneden.gif"`
+
+- `nlmenu.nl/resources/marge.html`: referenced in 6 html files (amongst which `nlmenu.nl/fset/admin.html`) within a frame definition:
+
+    `<frame src="/nlmenu.nl/resources/marge.html"  scrolling="no" noresize name="marge"  marginwidth="6" marginheight="1">`
+
+    **Question**: does wget even handle frames? How?
 
 ## Pages/resources that are not available in Pywb
 
@@ -210,3 +234,5 @@ The field *WARC-IP-Address* is defined in the [WARC specification](https://iipc.
 In this case, from the value 127.0.0.1 (=localhost) we can see that the files inside the warc originate from a local copy.
 
 [^2]: The total number of items in the diff file is 637; expected number is 668! No idea why.
+
+[^3]: Actually: names including the file paths, relative to the site root (e.g. *nlmenu.nl/images/alfabet_dgeo.gif*). Omitting the file path results in false positives, because the NL-menu directory tree contains many identically-named files that are in different directories.  

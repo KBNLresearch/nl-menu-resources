@@ -172,7 +172,9 @@ To completely rule out anything from the "live" site leaking into the crawl, I d
         --output-file="nl-menu.log" \
         http://www.nl-menu.nl/nlmenu.nl/nlmenu.shtml
 
-This results in a 200 MB compressed WARC file. 
+This results in a 200 MB compressed WARC file.
+
+<!-- **TODO**: test if specifying `http://www.nl-menu.nl` as root results in  different result, DONE no it doesn't!!!!   -->
 
 ## Rendering the archived site locally
 
