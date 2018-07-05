@@ -138,84 +138,8 @@ All done! The newly installed site is now available at the original URL in your 
 
 <http://www.nl-menu.nl> (which should redirect to <http://127.0.0.1/>)
 
-## Crawl the site for use in web archive
-
-### Preparation: change machine system date to approximate date of snapshot
-
-    sudo date --set="2004-01-23 21:03:09.000"
-
-Two methods listed in [van Luin](http://docplayer.nl/17762647-Ervaringen-met-website-archivering-in-het-nationaal-archief.html):
-
-1. Heritrix
-2. Wget
-
-### Heritrix
-
-Installed Heritrix 3.3. 0 (build heritrix-3.3.0-20180529.100446-105). For some reason Heritrix appears to ignore the domain to hosts file, crawling (some elements of) the "live" site instead. If I disable network acesss, the crawl job runs indefinitely without ever downloading any actual data. Tried this for several seed URLs, such as:
-
-    http://www.nl-menu.nl/nlmenu.nl/
-
-and
-
-    http://www.nl-menu.nl/nlmenu.nl/nlmenu.shtml
-
-These all give the same result. So I gave up on this and moved to the wget method below.
-
-## Wget
-
-To completely rule out anything from the "live" site leaking into the crawl, I disabled the network connection before starting the crawl. I then ran Wget following a modified version of the example in van Luin[^1]:
-
-    wget --mirror \
-        --page-requisites \
-        --warc-file="nl-menu" \
-        --warc-cdx \
-        --output-file="nl-menu.log" \
-        http://www.nl-menu.nl/nlmenu.nl/nlmenu.shtml
-
-This results in a 200 MB compressed WARC file.
-
-<!-- **TODO**: test if specifying `http://www.nl-menu.nl` as root results in  different result, DONE no it doesn't!!!!   -->
-
-## Rendering the archived site locally
-
-Install [pywb](https://github.com/webrecorder/pywb):
-
-    sudo python3 -m pip install pywb
-
-Set up test directory:
-
-    mkdir test-pywb
-    cd test-pywb
-
-Create archive:
-
-    wb-manager init my-web-archive
-
-Add NL-menu WARC:
-
-    wb-manager add my-web-archive /home/johan/NL-menu/warc-wget/nl-menu.warc.gz
-
-Start the server:
-
-    wayback
-
-Archived site is now available from:
-
-<http://localhost:8080/my-web-archive/20040123201017/http://www.nl-menu.nl/>
-
-Result:
-
-![](./img/nl-menu-pywb.png)
-
-Which appears to work fine!
-
-A more or less elaborate [Quality assessment of the archived site can be found here](./qa-archived-site.md)
-
 ## Additional resources
 
 * [Apache HTTP Server Documentation](https://httpd.apache.org/docs/)
 * [How To Install the Apache Web Server on Ubuntu 16.04](https://www.digitalocean.com/community/tutorials/how-to-install-the-apache-web-server-on-ubuntu-16-04)
 * [Make apache only accessible via 127.0.0.1](https://serverfault.com/questions/276963/make-apache-only-accessible-via-127-0-0-1-is-this-possible/276968#276968)
-* Jeroen van Luin: [Ervaringen met website-archivering in het Nationaal Archief](http://docplayer.nl/17762647-Ervaringen-met-website-archivering-in-het-nationaal-archief.html)
-
-[^1]: Compared to van Luin's example, this leaves out the *-w* switch (since we are crawling from a local machine), the *-k* switch (since converting the links is not necessary for rendering the site) and the *-E* switch (don't think changing any extensions is really necessary or desired in this case, but I could be wrong?). It also adds the *--warc-cdx* command (which writes an index file) and the *--output-file* switch (which writes a log file)

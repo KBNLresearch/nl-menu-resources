@@ -1,0 +1,36 @@
+<p>We recently recovered the contents of an old (2004) website from CD-ROM. I managed to get a local instance of the site running using the Apache web server; by editing the machine’s <em>hosts</em> file the site is available on that local machine from its original URL, which is <code>http://www.nl-menu.nl</code> (some more context can be found <a href="http://openpreservation.org/blog/2018/04/24/resurrecting-the-first-dutch-web-index-nl-menu-revisited/">here</a>).</p>
+<p>I’m now looking into ways to crawl the contents of the site into a WARC, so we can ingest it into our web archive. After initial experiments with Heritrix failed, I moved on to wget. After some experimentation the following wget command appeared to work reasonably well:</p>
+<pre><code>wget --mirror \
+    --page-requisites \
+    --warc-file=&quot;nl-menu&quot; \
+    --warc-cdx \
+    --output-file=&quot;nl-menu.log&quot; \
+    http://www.nl-menu.nl</code></pre>
+<p>However, closer inspection of the result showed that about 668 files in the source directory are missing in the resulting WARC file. The majority (90%) of these files are “orphan” resources that are not used/referenced by any of the HTML files in the crawl. However, the remaining 10% of missing files are resourced that <em>are</em> referenced, in most cases through JavaScript variables. These aren’t picked up by wget, and therefore they end up missing in the WARC. So I am looking for a way to force wget to include these resources anyway.</p>
+<p>At first wget’s <code>--input-file</code> switch (which takes a list of URLs) looked like a good way to achieve this. I created a directory listing of all files that are part of the website, and then transformed them into corresponding URLs:</p>
+<pre><code>find /var/www/www.nl-menu.nl -type f | sed -e &#39;s/\/var\/www\//http:\/\//g&#39; &gt; urls.txt</code></pre>
+<p>Then I ran wget like this (note that I removed the <code>--mirror</code> option, as this apparently causes wget to do a recursive crawl <em>for each single URL</em> in the list, which takes forever):</p>
+<pre><code>wget --page-requisites \
+    --warc-file=&quot;nl-menu&quot; \
+    --warc-cdx \
+    --output-file=&quot;nl-menu.log&quot; \
+    --input-file=urls.txt</code></pre>
+<p>This results in a WARC file that contains <em>all</em> files from the source directory: perfect! But it does introduce a different problem: when I try to access the WARC using <a href="https://github.com/webrecorder/pywb">pywb</a>, it turns out that the WARC is made up of 85864 individual captures (i.e. each file appears to be treated as an individual capture)! This makes rendering of the WARC impossible (loading the list of capture alone takes forever to begin with).</p>
+<p>So as a last resort I created a list of all URLs in HTML format, and put that file in the source directory. Steps:</p>
+<ol type="1">
+<li><p>Create list of URLS in Markdown format (add “&lt;” and “&gt;” pre-and suffix to each line):</p>
+<p>find /var/www/www.nl-menu.nl -type f | sed -e ‘s//var/www//&lt;http:///; s/$/&gt;/g’ &gt; urls.txt</p></li>
+<li><p>Replace any whitespace characters with <em>%20</em> to avoid malformed URLs:</p>
+<p>sed -i ‘s/ /%20/g’ urls.txt</p></li>
+<li><p>Convert URL list to HTML which is placed at the root directory of the source dir:</p>
+<p>sudo pandoc -s urls.txt -o /var/www/www.nl-menu.nl/urls.html</p></li>
+</ol>
+<p>Then I ran wget, using the above URL list as crawl root:</p>
+<pre><code>wget --mirror \
+    --page-requisites \
+    --warc-file=&quot;nl-menu&quot; \
+    --warc-cdx \
+    --output-file=&quot;nl-menu.log&quot; \
+    http://www.nl-menu.nl/urls.html</code></pre>
+<p>The resulting WARC contains all files that are in the source dir, and it can be accessed as one single capture in pywb. The obvious downside of this hack is that it compromises the integrity of the ‘original’ website by adding one (huge) HTML file that was not part of the original site to the WARC.</p>
+<p>This makes me wonder if there is another, more elegant way to do this that I have overlooked here? Any suggestions welcome!</p>
