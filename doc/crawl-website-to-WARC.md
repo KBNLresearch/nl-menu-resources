@@ -49,7 +49,7 @@ So, I tried adapt the basic command above to get a more complete capture.
 
 ## Wget: use --input-file switch
 
-Wget's `--input-file` switch take a list of URLs which are sequentially crawled. In theory this would allow one to force the inclusion of all files in the crawl. The first step here is to create a directory listing of the source directory of the website, and then transform each file entry into a corresponding URL. I did this using the command below: 
+Wget's `--input-file` switch takes a list of URLs which are sequentially crawled. In theory this would allow one to force the inclusion of all files in the crawl. The first step here is to create a directory listing of the source directory of the website, and then transform each file entry into a corresponding URL. I did this using the command below: 
 
     find /var/www/www.nl-menu.nl -type f \
         | sed -e 's/\/var\/www\//http:\/\//g' > urls.txt
@@ -62,34 +62,30 @@ I then ran wget with the command below (note that I removed the `--mirror` optio
         --output-file="nl-menu.log" \
         --input-file=urls.txt
 
-This results in a WARC file that contains *all* files from the source directory. But it does introduce a different problem: when the WARC is accessed using pywb, it shows up as 85864 individual captures (i.e. each file appears to be treated as an individual capture)! This makes rendering of the WARC impossible (loading the list of capture alone takes forever to begin with). Right now it is unclear whether this behaviour is caused by the WARC, or by pywb[^2]. 
+This results in a WARC file that contains *all* files from the source directory. But it does introduce a different problem: when the WARC is accessed using pywb, it shows up as 85864 individual captures (i.e. each file appears to be treated as an individual capture)! This makes rendering of the WARC impossible (loading the list of capture alone takes forever to begin with). 
 
-## Wget: list of URLs as HTML crawl root
+After getting in touch with pywb author Ilya Kremer about this, Ilya pointed out pywb's behaviour in this case is triggered by the fact there is no exact match for the root URL `http://www.nl-menu.nl`. This causes pywb to do a prefix query which in this case results in 80k URLs. This can be avoided by explicitly adding the domain root to the URL list:  
 
-So as a last resort did the following hack, where I created a list of all URLs in HTML format, and then put that file in the site's source directory. Steps:
+    echo "http://www.nl-menu.nl/" > urls.txt
 
-1. Create list of URLS in Markdown format (add "\<" and "\>" pre-and suffix to each line):
+Incidentally we also need to add entries for the roots of the Dutch and English language home pages:
 
-    `find /var/www/www.nl-menu.nl -type f | sed -e 's/\/var\/www\//<http:\/\//; s/$/>\n/g' > urls.txt`
+    echo "http://www.nl-menu.nl/nlmenu.nl/" >> urls.txt
+    echo "http://www.nl-menu.nl/nlmenu.en/" >> urls.txt
 
-2. Replace any whitespace characters with *%20* to avoid malformed URLs:
+Then we can add the remaining files (and rewrite file paths as URLs)
 
-    `sed -i 's/\ /%20/g' urls.txt`
+    find /var/www/www.nl-menu.nl -type f | sed -e 's/\/var\/www\//http:\/\//g' >> urls.txt
 
-3. Convert URL list to HTML (using Pandoc) which is placed at the root directory of the source dir:
+Finally run wget:
 
-    `sudo pandoc -s urls.txt -o /var/www/www.nl-menu.nl/urls.html`
-
-Then I ran wget, using the above URL list as crawl root:
-
-    wget --mirror \
-        --page-requisites \
+    wget --page-requisites \
         --warc-file="nl-menu" \
         --warc-cdx \
         --output-file="nl-menu.log" \
-        http://www.nl-menu.nl/urls.html
+        --input-file=urls.txt
 
-The resulting WARC contains all files that are in the source dir, and it can be accessed as one single capture in pywb. The obvious downside of this hack is that it compromises the integrity of the 'original' website by adding one (huge) HTML file that was not part of the original site to the WARC.
+This results in a WARC that is both complete *and* renders in pywb! 
 
 ## Warcit
 
@@ -139,5 +135,3 @@ A more or less elaborate [Quality assessment of the archived site can be found h
 - Jeroen van Luin: [Ervaringen met website-archivering in het Nationaal Archief](http://docplayer.nl/17762647-Ervaringen-met-website-archivering-in-het-nationaal-archief.html)
 
 [^1]: Compared to van Luin's example, this leaves out the *-w* switch (since we are crawling from a local machine, overloading the host server is not an issue, so we can crawl at maximum speed), the *-k* switch (converting the links is not necessary for rendering the site) and the *-E* switch (I don't think changing any extensions is really necessary or desired in this case, but I could be wrong?). It also adds the *--warc-cdx* command (which writes an index file) and the *--output-file* switch (which writes a log file)
-
-[^2]: It is worth pointing out that if the automatically-built index file of the first (rendering/1-capture) WARC is replaced by an index that is produced by pywb's cdx-indexer tool (command: `cdx-indexer -j -s /home/johan/test-pywb/collections/my-web-archive/indexes/index.cdxj /home/johan/test-pywb/collections/my-web-archive/archive/nl-menu.warc.gz`), that WARC subsequently also shows up as 85864 captures. This suggests the index file might be the culprit for the other problematic WARCs.
