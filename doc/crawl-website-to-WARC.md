@@ -85,7 +85,37 @@ Finally run wget:
         --output-file="nl-menu.log" \
         --input-file=urls.txt
 
-This results in a WARC that is both complete *and* renders in pywb! 
+This results in a WARC that is both complete *and* renders in pywb!
+
+<!-- TODO: what happens if we include directories in the find command? Might be easier. -->
+
+### Quality checks
+
+Number of crawled files:
+
+    find ./www.nl-menu.nl/ -type f | wc -l
+
+Result:
+
+    85647
+
+No. of files in source tree is 85644; crawled tree adds 1 index.html at the domain root + 2 icon files. So this is OK.
+
+From CDX:
+
+    grep " 200 " nl-menu.cdx | wc -l
+
+Result:
+
+    85649
+
+This adds 2 more entries for the roots of the Dutch and English language home pages (`http://www.nl-menu.nl/nlmenu.nl/` and `http://www.nl-menu.nl/nlmenu.en/`).
+
+Double-check on missing files:
+
+    diff --brief -r /var/www/www.nl-menu.nl /home/johan/NL-menu/wget-i-addindex/www.nl-menu.nl/ | grep "Only in /var/www/" > diffdir.txt
+
+Which is empty, so all is well!
 
 ## Warcit
 
