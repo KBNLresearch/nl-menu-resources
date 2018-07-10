@@ -64,7 +64,7 @@ I then ran wget with the command below (note that I removed the `--mirror` optio
 
 This results in a WARC file that contains *all* files from the source directory. But it does introduce a different problem: when the WARC is accessed using pywb, it shows up as 85864 individual captures (i.e. each file appears to be treated as an individual capture)! This makes rendering of the WARC impossible (loading the list of capture alone takes forever to begin with). 
 
-After getting in touch with pywb author Ilya Kremer about this, Ilya pointed out pywb's behaviour in this case is triggered by the fact there is no exact match for the root URL `http://www.nl-menu.nl`. This causes pywb to do a prefix query which in this case results in 80k URLs. This can be avoided by explicitly adding the domain root to the URL list:  
+After getting in touch with pywb author Ilya Kreymer about this, Ilya pointed out pywb's behaviour in this case is triggered by the fact there is no exact match for the root URL `http://www.nl-menu.nl`. This causes pywb to do a prefix query which in this case results in 80k URLs. This can be avoided by explicitly adding the domain root to the URL list:  
 
     echo "http://www.nl-menu.nl/" > urls.txt
 
