@@ -1,0 +1,134 @@
+<p>% Crawling offline web content: the NL-menu case</p>
+<p>In a <a href="http://openpreservation.org/blog/2018/04/24/resurrecting-the-first-dutch-web-index-nl-menu-revisited/">previous blog post</a> I showed how we resurrected <em>NL-menu</em>, the first Dutch web index. It explains how we recovered the site's data from an old CD-ROM, and how we subsequently created a local copy of the site by <a href="https://github.com/KBNLresearch/nl-menu-resources/blob/master/doc/serving-static-website-with-Apache.md">serving the CD-ROM's contents on the <em>Apache</em> web server</a>. This follow-up post covers the final step: crawling the resurrected site to a <a href="https://en.wikipedia.org/wiki/Web_ARChive">WARC</a> file that can be ingested into our web archive.</p>
+<h2>Previous work</h2>
+<p>A <a href="http://docplayer.nl/17762647-Ervaringen-met-website-archivering-in-het-nationaal-archief.html">2016 report by Jeroen van Luin</a> documents the web archiving workflows that are used by the National Archives of the Netherlands. Interestingly, it also covers the archiving of websites that are no longer online from local copies. Since this is similar to our <em>NL-menu</em> case, I took this as a starting point. The report mentions two general workflows for crawling from localhost:</p>
+<ol>
+<li>One based on the <a href="https://github.com/internetarchive/heritrix3"><em>Heritrix</em></a> crawler.</li>
+<li>Another one that uses the <a href="https://www.gnu.org/software/wget/"><em>wget</em></a> tool.</li>
+</ol>
+<h2>Preparation: change machine system date, disable network connection</h2>
+<p>In most cases it will be desirable that the site snapshot will appear in the Wayback timeline around the year/date it was actually online. This can be achieved by setting the computer's system date to that date. This has to be done before running the crawl. In the case of <em>NL-menu</em> I used the &quot;last modified&quot; time stamp of the files on the CD-ROM filesystem as an approximation. On a Linux-based system the following command will do the trick:</p>
+<pre><code>sudo date --set=&quot;2004-01-23 21:03:09.000&quot;</code></pre>
+<p>Also, to completely rule out anything from the &quot;live&quot; web leaking into the crawl, it may be prudent to disable the network connection at this point (both wired and wireless connections).</p>
+<h2>Heritrix</h2>
+<p>I started out with some limited tests with <em>Heritrix</em> 3, but this resulted in several problems. Most importantly, <em>Heritrix</em> appeared to ignore the <em>hosts</em> file on my machine (this file maps the domain <em>www.nl-menu.nl</em> to the <em>localhost</em> IP-adress). The effect of this was, that with the network disabled the crawl job would run indefinitely without ever downloading any data. After enabling the network, <em>Heritrix</em> would crawl <a href="http://www.nl-menu.nl/">the &quot;live&quot; site at <em>www.nl-menu.nl</em></a> instead of the locally resurrected version<a href="#fn1" class="footnote-ref" id="fnref1"><sup>1</sup></a>. Because of this, I quickly gave up on <em>Heritrix</em>, and moved on to <em>wget</em>.</p>
+<h2>wget: first attempt</h2>
+<p>After some experimentation, the following set of <em>wget</em> options appeared to work reasonably well<a href="#fn2" class="footnote-ref" id="fnref2"><sup>2</sup></a>:</p>
+<pre><code>wget --mirror \
+    --page-requisites \
+    --adjust-extension \
+    --warc-file=&quot;nl-menu&quot; \
+    --warc-cdx \
+    --output-file=&quot;nl-menu.log&quot; \
+    http://www.nl-menu.nl/</code></pre>
+<p>The above command results in a 200 MB compressed WARC file, a mirror of the crawled directory tree, a CDX index file (not really nececessary, but useful for quality checks), and a log file.</p>
+<h2>Rendering the WARC</h2>
+<p>In order to test the rendering of the WARC locally, I installed <a href="https://github.com/webrecorder/pywb"><em>pywb</em></a> (which is part of the Webrecorder project). I then created a test archive using:</p>
+<pre><code>wb-manager init my-web-archive</code></pre>
+<p>and then added my newly created WARC using:</p>
+<pre><code>wb-manager add my-web-archive ~/NL-menu/warc-wget/nl-menu.warc.gz</code></pre>
+<p>I then started the server with the command:</p>
+<pre><code>wayback</code></pre>
+<p>After this the archive is available from <a href="http://localhost:8080/my-web-archive/" class="uri">http://localhost:8080/my-web-archive/</a>. Below is a screenshot of one page:</p>
+<p><img src="http://openpreservation.org/wp-content/uploads/2018/07/NL-menu-pywb.png" /></p>
+<p>Note that the <em>Archived</em> date as shown by <em>pywb</em> corresponds to our modified system date (i.e. 23 january 2004).</p>
+<h2>Completeness checks</h2>
+<p>An analysis of the completeness of the <em>wget</em> capture<a href="#fn3" class="footnote-ref" id="fnref3"><sup>3</sup></a> revealed that over 660 files from the <em>NL-menu</em> source directory tree were missing in the crawl. Most (90%) of these were missing because they are simply not referenced (by way of a hyperlink) by any of the website resources that are crawled from the site root. Of the remaining 64 missing files, 51 are referenced through JavaScript variables (which are understandably not picked up by wget's crawl mechanism). Other, less common reasons were:</p>
+<ul>
+<li>A file is only referenced through a <em>value</em> attribute of an <em>input</em> element.</li>
+<li>A file is only referenced through a <em>src</em> attribute of a <em>frame</em> element.</li>
+</ul>
+<p>Thhis raises the obvious question: can we force <em>wget</em> to crawl <em>all</em> files in the source directory? Of course we can!</p>
+<h2>Wget: use --input-file switch with URL list</h2>
+<p>The solution here is to use <em>wget</em>'s <code>--input-file</code> switch, which takes a list of URLs which are sequentially crawled. As a first step we need to create a directory listing of the source directory of the website, and then transform each file entry into a corresponding URL. I did this using the following command:</p>
+<pre><code>find /var/www/www.nl-menu.nl -type f \
+    | sed -e &#39;s/\/var\/www\//http:\/\//g&#39; &gt; urls.txt</code></pre>
+<p>I then ran <em>wget</em><a href="#fn4" class="footnote-ref" id="fnref4"><sup>4</sup></a>:</p>
+<pre><code>wget --page-requisites \
+    --warc-file=&quot;nl-menu&quot; \
+    --warc-cdx \
+    --output-file=&quot;nl-menu.log&quot; \
+    --input-file=urls.txt</code></pre>
+<p>This results in a WARC file that contains <em>all</em> files from the source directory. But it does introduce a different problem: when the WARC is accessed using <em>pywb</em>, it shows up as over 80 thousand individual captures (i.e. each file appears to be treated as an individual capture)! This makes rendering of the WARC near impossible (if only because loading the list of captures is extremely slow to begin with).</p>
+<p>After getting in touch with <em>pywb</em> author Ilya Kreymer, Ilya pointed out that <em>pywb</em>'s behaviour here is the combined effect of a bug in <em>pywb</em> and a peculiarity of the <em>NL-menu</em> directory tree: unlike most websites, it does not contain an index document (e.g. <em>index.html</em>) at the domain root level. Instead, the domain root contains 2 directories which hold the Dutch and English-language versions of the site, respectively:</p>
+<pre><code>/var/www/www.nl-menu.nl/
+&#9500;&#9472;&#9472; nlmenu.en
+&#9474;&#160;&#160; &#9500;&#9472;&#9472; index.html
+&#9474;&#160;&#160; &#9500;&#9472;&#9472; ...
+&#9474;&#160;&#160; &#9500;&#9472;&#9472; ...
+&#9474;&#160;&#160; &#9492;&#9472;&#9472; ...
+&#9492;&#9472;&#9472; nlmenu.nl
+    &#9500;&#9472;&#9472; index.html
+    &#9500;&#9472;&#9472; ...
+    &#9500;&#9472;&#9472; ...
+    &#9492;&#9472;&#9472; ...</code></pre>
+<p>The result of this is that the input URL list (which is derived from files in the directory tree) does not contain the site's root URL (<em>http://www.nl-menu.nl</em>), which in turn ends up missing in the WARC. Ultimately this leads <em>pywb</em> to do a prefix query which in this case results in 80 thousand URLs!</p>
+<h2>Improved URL list</h2>
+<p>Ilya suggested to avoid this problem by explicitly adding the domain root to the URL list:</p>
+<pre><code>echo &quot;http://www.nl-menu.nl/&quot; &gt; urls.txt</code></pre>
+<p>Incidentally we also need to add entries for the root directories of the Dutch and English language sub-sites:</p>
+<pre><code>echo &quot;http://www.nl-menu.nl/nlmenu.nl/&quot; &gt;&gt; urls.txt
+echo &quot;http://www.nl-menu.nl/nlmenu.en/&quot; &gt;&gt; urls.txt</code></pre>
+<p>Then we can add the remaining files (and rewrite file paths as URLs) as before:</p>
+<pre><code>find /var/www/www.nl-menu.nl -type f \
+    | sed -e &#39;s/\/var\/www\//http:\/\//g&#39; &gt; urls.txt</code></pre>
+<p>Finally run <em>wget</em>:</p>
+<pre><code>wget --page-requisites \
+    --warc-file=&quot;nl-menu&quot; \
+    --warc-cdx \
+    --output-file=&quot;nl-menu.log&quot; \
+    --input-file=urls.txt</code></pre>
+<p>This results in a WARC that is complete <em>and</em> renders in <em>pywb</em> as well. On a side note, although rendering and navigating the site works well overall, there are still some small issues. For one thing, coming from the Dutch or English-language home page, clicking on the link to the site's <em>registration</em> page results in a <em>Url Not Found</em> error, even though this page loads without problems coming from any other page on the site. I don't really understand why this happens, although I suspect a combination of JavaScript and early-2000s <a href="https://en.wikipedia.org/wiki/Framing_(World_Wide_Web)">frames</a> madness may be to blame here.</p>
+<h2>Authenticity and provenance</h2>
+<p>My <a href="http://openpreservation.org/blog/2018/04/24/resurrecting-the-first-dutch-web-index-nl-menu-revisited/">previous blog post</a> contained the following observation on authenticity and provenance:</p>
+<blockquote>
+<p>For one thing, we need to record metadata that makes it absolutely clear that our archival snapshot was taken from a locally reconstructed copy, rather than the original site.</p>
+</blockquote>
+<p>So the more specific question is: does the WARC that we just created contain any metadata about the provenance of this snapshot? To find out, let's use the <em>warcdump</em> tool that is part of the <a href="https://github.com/internetarchive/warctools"><em>warctools</em></a> toolkit:</p>
+<pre><code>warcdump nl-menu.warc.gz &gt; nl-menu-dump.txt</code></pre>
+<p>This results in a (huge) text file with metadata about all archived resources inside the WARC. Here is an example of one (request) record:</p>
+<pre><code>archive record at nl-menu.warc.gz:75708014
+Headers:
+    WARC-Type:request
+    WARC-Target-URI:&lt;http://www.nl-menu.nl/nlmenu.en/index.html&gt;
+    Content-Type:application/http;msgtype=request
+    WARC-Date:2004-01-23T20:04:54Z
+    WARC-Record-ID:&lt;urn:uuid:4b05df6b-d408-4f2f-8efb-bbd38098cbdb&gt;
+    WARC-IP-Address:127.0.0.1
+    WARC-Warcinfo-ID:&lt;urn:uuid:7dacf508-ab81-4244-ae9c-ce04a1e18123&gt;
+    WARC-Block-Digest:sha1:MJEIKQUIEOMARJPUEYXZFT4TTTUKX2IE
+    Content-Length:159
+Content Headers:
+    Content-Type : application/http;msgtype=request
+    Content-Length : 159
+Content:
+    GET /nlmenu\x2Een/index\x2Ehtml HTTP/1\x2E1\xD\xAUser\x2DAgent\x3A Wget/1\x2E19 \x28linux\x2Dgnu\x29\xD\xAAccept\x3A \x2A/\x2A\xD\xAAccept\x2DEncoding\x3A identity\xD\xAHost\x3A www\x2Enl\x2Dmenu\x2Enl\xD\xAConnection\x3A Keep\x2DAlive\xD\xA\xD\xA
+    ...</code></pre>
+<p>Note this line:</p>
+<pre><code>WARC-IP-Address:127.0.0.1</code></pre>
+<p>The field <em>WARC-IP-Address</em> is defined in the <a href="https://iipc.github.io/warc-specifications/specifications/warc-format/warc-1.1/#warc-ip-address">WARC specification</a> as:</p>
+<blockquote>
+<p>The WARC-IP-Address is the numeric Internet address contacted to retrieve any included content. An IPv4 address shall be written as a &#8220;dotted quad&#8221;; an IPv6 address shall be written as specified in [RFC4291]. For a HTTP retrieval, this will be the IP address used at retrieval time corresponding to the hostname in the record&#8217;s target-Uri.</p>
+</blockquote>
+<p>In this case, the value 127.0.0.1 (=localhost) unambiguously shows that this resource was crawled from a local copy, and not from the live web. So the required provenance metadata does indeed exist<a href="#fn5" class="footnote-ref" id="fnref5"><sup>5</sup></a></p>
+<h2>Conclusion</h2>
+<p>The above steps complete the recovery and archiving of the <em>NL-menu</em> website. In the coming months the KB will start some more &quot;web archaeology&quot; activities, and it will be interesting to see to what extent these <em>wget</em> &quot;recipes&quot; will work for other offline web content. In any case they may be a useful starting point.</p>
+<h2>Acknowledgements</h2>
+<p>Thanks are due to Ilya Kreymer, Raffaele Messuti and Andy Jackson for their helpful suggestions on <em>wget</em> and <em>pywb</em>, and Ren&#233; Voorburg for his suggestions on improving and quality-checking the crawl.</p>
+<h2>Additional resources</h2>
+<ul>
+<li><p>Jeroen van Luin, <a href="http://docplayer.nl/17762647-Ervaringen-met-website-archivering-in-het-nationaal-archief.html">Ervaringen met website-archivering in het Nationaal Archief</a>. Report, National Archives of the Netherlands (in Dutch).</p></li>
+<li><p><a href="https://github.com/KBNLresearch/nl-menu-resources/blob/master/doc/qa-archived-site.md">Rough working notes on quality/completeness checks</a> - unedited notes on some of the tests I did to assess the crawl quality (mostly in terms of completeness)</p></li>
+<li><p><a href="https://github.com/webrecorder/pywb">pywb</a>, Core Python Web Archiving Toolkit for replay and recording of web archives</p></li>
+<li><p><a href="https://github.com/internetarchive/warctools">warctools</a></p></li>
+</ul>
+<section class="footnotes">
+<hr />
+<ol>
+<li id="fn1"><p>A site still exists at this domain, even though its contents are now largely unrelated to the original <em>NL-menu</em><a href="#fnref1" class="footnote-back">&#8617;</a></p></li>
+<li id="fn2"><p>Compared with the examples in the NA documentation, this leaves out the <em>-w</em> (wait) switch (since we are crawling from a local machine it is safe to crawl at maximum speed), the <em>-k</em> (convert links) switch, and the <em>-E</em> (adjust extension) switch. It also adds the <em>--warc-cdx</em> command (which writes an index file) and the <em>--output-file</em> switch (which writes a log)<a href="#fnref2" class="footnote-back">&#8617;</a></p></li>
+<li id="fn3"><p>A detailed discussion of the methods that were used for this analysis is beyond the scope of this blog post; however some <a href="https://github.com/KBNLresearch/nl-menu-resources/blob/master/doc/qa-archived-site.md">rough working notes are available here</a>.<a href="#fnref3" class="footnote-back">&#8617;</a></p></li>
+<li id="fn4"><p>Note that I removed the <code>--mirror</code> option here, as it seems that this causes <em>wget</em> to do a recursive crawl <em>for each single URL</em> in the list. The result of this is that <em>wget</em> keeps crawling for hours without any (new) data being added to the crawl result.<a href="#fnref4" class="footnote-back">&#8617;</a></p></li>
+<li id="fn5"><p>How this particular type of provenance metadata is exposed to a user of the web archive is a different matter<a href="#fnref5" class="footnote-back">&#8617;</a></p></li>
+</ol>
+</section>

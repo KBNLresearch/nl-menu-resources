@@ -169,7 +169,7 @@ The above steps complete the recovery and archiving of the *NL-menu* website. In
 
 ## Acknowledgements
 
-Thanks are due to Ilya Kreymer, Raffaele Messuti and Andy Jackson for their helpful suggestions on *wget* and *pywb*.
+Thanks are due to Ilya Kreymer, Raffaele Messuti and Andy Jackson for their helpful suggestions on *wget* and *pywb*, and René Voorburg for his suggestions on improving and quality-checking the crawl.
 
 ## Additional resources
 
