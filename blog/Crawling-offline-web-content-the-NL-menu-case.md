@@ -4,7 +4,7 @@ In a [previous blog post](http://openpreservation.org/blog/2018/04/24/resurrecti
 
 ## Previous work
 
-A [2016 report by Jeroen van Luin](http://docplayer.nl/17762647-Ervaringen-met-website-archivering-in-het-nationaal-archief.html) documents the web archiving workflows that are used by the National Archives of the Netherlands. Interestingly, it also covers the archiving of websites that are no longer online from local copies. Since this is similar to our *NL-menu* case, I took this as a starting point. The report mentions two general workflows for crawling from localhost:
+A [2016 report by Jeroen van Luin](https://kia.pleio.nl/file/download/55806143/Report%20on%20web-archiving%20in%20the%20Dutch%20National%20Archives.pdf) documents the web archiving workflows that are used by the National Archives of the Netherlands. Interestingly, it also covers the archiving of websites that are no longer online from local copies. Since this is similar to our *NL-menu* case, I took this as a starting point. The report mentions two general workflows for crawling from localhost:
 
 1. One based on the [*Heritrix*](https://github.com/internetarchive/heritrix3) crawler.
 2. Another one that uses the [*wget*](https://www.gnu.org/software/wget/) tool.
@@ -173,7 +173,7 @@ Thanks are due to Ilya Kreymer, Raffaele Messuti and Andy Jackson for their help
 
 ## Additional resources
 
-- Jeroen van Luin, [Ervaringen met website-archivering in het Nationaal Archief](http://docplayer.nl/17762647-Ervaringen-met-website-archivering-in-het-nationaal-archief.html). Report, National Archives of the Netherlands (in Dutch).
+- Jeroen van Luin, [Experiences with web archiving in the Dutch National Archives](https://kia.pleio.nl/file/download/55806143/Report%20on%20web-archiving%20in%20the%20Dutch%20National%20Archives.pdf). Report, National Archives of the Netherlands
 
 - [Rough working notes on quality/completeness checks](https://github.com/KBNLresearch/nl-menu-resources/blob/master/doc/qa-archived-site.md) - unedited notes on some of the tests I did to assess the crawl quality (mostly in terms of completeness)
 
